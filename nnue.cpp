@@ -368,7 +368,13 @@ static void HalfKxLayerForward(POSITIONDATA *pos, int move, struct net_data *dat
 	}
 #else
 	// is acc valid?
-	if (!pos->eval_stack.state.valid)
+	if (pos->eval_stack.state.valid)
+	{	// only valid because we just did a null move
+		// in which case, we need to xfer up both sides of the acc and the psqt acc
+		//assert(!move);
+		memcpy(&pos->eval_stack.state.accumulator[0][0], &(pos - 1)->eval_stack.state.accumulator[0][0], 2 * HALFKX_LAYER_SIZE * sizeof(int16));
+	}
+	else
 	{
 		for (side=0; side < 2; side++) 
 		{
@@ -566,10 +572,11 @@ bool NnueLoadNet(char *path)
 // best #include "c:/rebel/growing_fruit-master-3/embedded-nnues/Benjamin 1.1-iter=1-pos=1.2B-d6+d7-lambda=0.5-lr=0.000001-epoch=79-arch=3-loss=0.16672.txt"
 
 //#include "embedded-nnues/resume-iter=1-pos=1.2B-d6+d7-lambda=0.5-lr=0.000004-epoch=147-arch=3-loss=0.16804.txt"
-//#include "embedded-nnues/ChrisW-NNUE-Tal-10-MinuteBlitz.txt"
-#include "embedded-nnues/ChrisW-NNUE-Tal-5-MinuteBlitz.txt"
+#include "embedded-nnues/ChrisW-NNUE-Tal-10-Minute-Blitzer.txt"
+//#include "embedded-nnues/ChrisW-NNUE-Tal-5-Minute-Blitzer.txt"
 //#include "embedded-nnues/ChrisW-NNUE-Tal-2-Minute-Blitzer.txt"
 //#include "embedded-nnues/ChrisW-NNUE-Tal-1-Minute-Blitzer.txt"
+
 
 bool NnueLoadEmbeddedNet()
 {
